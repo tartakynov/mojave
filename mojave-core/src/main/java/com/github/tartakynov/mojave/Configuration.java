@@ -42,7 +42,7 @@ public final class Configuration {
         Map<String, String> section = new HashMap<String, String>();
         for (String key : this.values.keySet()) {
             if (key.startsWith(name + ".")) {
-                section.put(key, this.values.get(key));
+                section.put(key.substring(name.length() + 1), this.values.get(key));
             }
         }
         return new Configuration(section);

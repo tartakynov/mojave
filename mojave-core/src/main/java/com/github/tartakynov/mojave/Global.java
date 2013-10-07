@@ -20,6 +20,8 @@ package com.github.tartakynov.mojave;
 
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.tools.shell.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -33,7 +35,6 @@ import java.util.Stack;
  * JavaScript global object for Mojave.
  */
 public class Global extends ImporterTopLevel {
-
     protected static final HashMap<File, Scriptable> modules = new HashMap<File, Scriptable>();
     protected static final Stack<String> location = new Stack<String>();
     protected final Context context;
@@ -113,6 +114,8 @@ public class Global extends ImporterTopLevel {
         try {
             location.push(file.getParentFile().getAbsolutePath());
             Script script = cx.compileReader(in, file.getName(), 1, null);
+            scope.defineProperty("__filename", file.getName(), CONST | DONTENUM);
+            scope.defineProperty("__dirname", file.getParent(), CONST | DONTENUM);
             script.exec(cx, scope);
         } finally {
             in.close();
