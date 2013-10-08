@@ -33,6 +33,15 @@ public final class Configuration {
     }
 
     /**
+     * Gets properties stored in the map.
+     *
+     * @return properties.
+     */
+    public Map<String, String> getProperties() {
+        return new HashMap<String, String>(this.values);
+    }
+
+    /**
      * Gets a section mapped to key, returning empty section if unmapped.
      *
      * @param name to be found

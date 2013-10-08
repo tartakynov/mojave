@@ -18,18 +18,14 @@
  */
 package com.github.tartakynov.mojave;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.tools.shell.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * JavaScript global object for Mojave.
@@ -99,10 +95,11 @@ public class Global extends ImporterTopLevel {
      * This method is defined as a JavaScript function.
      */
     public static void config(Context ctx, Scriptable thisObj, Object[] args, Function funObj) {
-        // convert javascript object to java map
-        Map<String, String> map = convertJsObjectToMap((NativeObject) args[0], "");
-        Configuration config = new Configuration(map);
-        map.toString();
+        // convert javascript object to configuration
+        Configuration config = new Configuration(convertJsObjectToMap((NativeObject) args[0], ""));
+        Properties properties = new Properties();
+        properties.putAll(config.getProperties());
+        PropertyConfigurator.configure(properties);
     }
 
     /**
@@ -144,7 +141,7 @@ public class Global extends ImporterTopLevel {
                         result.put(prefix + key + "." + i++, Context.toString(item));
                     }
                 } else {
-                    result.put(prefix + key, Context.toString(value));
+                    result.put(key == "__" ? prefix.substring(0, prefix.length() - 1) : prefix + key, Context.toString(value));
                 }
             }
         }
