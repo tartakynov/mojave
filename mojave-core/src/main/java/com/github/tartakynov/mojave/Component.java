@@ -21,7 +21,7 @@ package com.github.tartakynov.mojave;
 /**
  * Represents an external component.
  */
-public interface Component {
+public interface Component extends Configurable {
     /**
      * @return component's name.
      */
