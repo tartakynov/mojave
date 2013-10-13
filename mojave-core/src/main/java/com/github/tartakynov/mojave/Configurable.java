@@ -18,6 +18,8 @@
  */
 package com.github.tartakynov.mojave;
 
+import com.github.tartakynov.mojave.exceptions.ConfigurationException;
+
 public interface Configurable {
-    void configure(Configuration config);
+    void configure(Configuration config) throws ConfigurationException;
 }

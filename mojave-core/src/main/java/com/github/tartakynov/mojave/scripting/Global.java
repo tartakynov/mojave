@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.github.tartakynov.mojave;
+package com.github.tartakynov.mojave.scripting;
 
+import com.github.tartakynov.mojave.Configuration;
 import org.apache.log4j.PropertyConfigurator;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.tools.shell.Environment;
@@ -80,7 +81,7 @@ public class Global extends ImporterTopLevel {
 
         // define the exports property
         ScriptableObject exports = (ScriptableObject) ctx.newObject(scope);
-        scope.defineProperty("exports", exports, PERMANENT | DONTENUM);
+        scope.defineProperty("exports", exports, DONTENUM);
 
         // compile & execute the module
         runScriptFromFile(ctx, scope, file);
@@ -109,7 +110,8 @@ public class Global extends ImporterTopLevel {
             throws IOException {
         FileReader in = new FileReader(file);
         try {
-            location.push(file.getParentFile().getAbsolutePath());
+            String currentLocation = file.getParentFile().getAbsolutePath();
+            location.push(currentLocation);
             Script script = cx.compileReader(in, file.getName(), 1, null);
             scope.defineProperty("__filename", file.getName(), CONST | DONTENUM);
             scope.defineProperty("__dirname", file.getParent(), CONST | DONTENUM);

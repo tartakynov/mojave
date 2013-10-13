@@ -18,6 +18,8 @@
  */
 package com.github.tartakynov.mojave;
 
+import com.github.tartakynov.mojave.exceptions.ConfigurationException;
+
 /**
  * Represents an external component.
  */
@@ -25,5 +27,5 @@ public interface Component extends Configurable {
     /**
      * @return component's name.
      */
-    String getName();
+    String getName() throws ConfigurationException;
 }

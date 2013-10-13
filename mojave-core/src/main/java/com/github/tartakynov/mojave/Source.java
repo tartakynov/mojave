@@ -18,9 +18,59 @@
  */
 package com.github.tartakynov.mojave;
 
+import com.github.tartakynov.mojave.exceptions.ConfigurationException;
+
 /**
  * Source connects to an external source and reads messages.
  */
-public interface Source extends Component {
+public abstract class Source implements Component {
+    private boolean configured;
+    private String name;
+    private int concurrencyLevel = 0;
 
+    /**
+     * Gets the number of threads consuming current {@see Source}.
+     *
+     * @return Current concurrency level.
+     */
+    public int getConcurrencyLevel() {
+        return this.concurrencyLevel;
+    }
+
+    /**
+     * Tries to return the next message from an external source.
+     *
+     * @return Message as a string.
+     */
+    public abstract String take();
+
+    @Override
+    public void configure(Configuration config) throws ConfigurationException {
+        if (!this.configured) {
+            this.validateConfiguration(config);
+            this.name = config.getSectionName();
+            this.configured = true;
+        }
+    }
+
+    /**
+     * Gets current {@see Source} name.
+     *
+     * @throws ConfigurationException
+     */
+    @Override
+    public String getName() throws ConfigurationException {
+        if (!this.configured) {
+            throw new ConfigurationException("Not configured");
+        }
+
+        return this.name;
+    }
+
+    protected void validateConfiguration(Configuration config) throws ConfigurationException {
+        String name = config.getSectionName();
+        if (name == null || name.length() == 0) {
+            throw new ConfigurationException("The name is not provided.");
+        }
+    }
 }

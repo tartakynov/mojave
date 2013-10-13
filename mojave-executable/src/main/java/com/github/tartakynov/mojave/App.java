@@ -1,6 +1,7 @@
 package com.github.tartakynov.mojave;
 
 
+import com.github.tartakynov.mojave.scripting.Global;
 import org.mozilla.javascript.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

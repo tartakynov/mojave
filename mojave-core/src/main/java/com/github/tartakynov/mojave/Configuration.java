@@ -27,8 +27,15 @@ import java.util.Map;
  */
 public final class Configuration {
     private final Map<String, String> values;
+    private final String name;
 
     public Configuration(Map<String, String> values) {
+        this.name = null;
+        this.values = values;
+    }
+
+    public Configuration(String name, Map<String, String> values) {
+        this.name = name;
         this.values = values;
     }
 
@@ -54,7 +61,26 @@ public final class Configuration {
                 section.put(key.substring(name.length() + 1), this.values.get(key));
             }
         }
-        return new Configuration(section);
+        return new Configuration(name, section);
+    }
+
+    /**
+     * Determines whether a configuration contains a specified key.
+     *
+     * @param key to find in the configuration.
+     * @return true if the source sequence contains a key that has the specified value; otherwise, false.
+     */
+    public boolean contains(String key) {
+        return this.values.containsKey(key);
+    }
+
+    /**
+     * Gets the name of the current section.
+     *
+     * @return the name associated with the current section if the section is named; otherwise, null.
+     */
+    public String getSectionName() {
+        return this.name;
     }
 
     /**

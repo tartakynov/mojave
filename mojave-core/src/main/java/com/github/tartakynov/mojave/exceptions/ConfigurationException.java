@@ -22,9 +22,6 @@ package com.github.tartakynov.mojave.exceptions;
  * The exception that is thrown when a error occurs during configuration.
  */
 public class ConfigurationException extends Exception {
-    public ConfigurationException() {
-    }
-
     public ConfigurationException(String message) {
         super(message);
     }
