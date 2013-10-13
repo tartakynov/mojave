@@ -143,7 +143,7 @@ public class Global extends ImporterTopLevel {
                         result.put(prefix + key + "." + i++, Context.toString(item));
                     }
                 } else {
-                    result.put(key == "__" ? prefix.substring(0, prefix.length() - 1) : prefix + key, Context.toString(value));
+                    result.put(key.equals("__") ? prefix.substring(0, prefix.length() - 1) : prefix + key, Context.toString(value));
                 }
             }
         }

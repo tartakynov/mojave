@@ -26,7 +26,7 @@ import com.github.tartakynov.mojave.exceptions.ConfigurationException;
 public abstract class Source implements Component {
     private boolean configured;
     private String name;
-    private int concurrencyLevel = 0;
+    private int concurrencyLevel;
 
     /**
      * Gets the number of threads consuming current {@see Source}.
@@ -49,6 +49,7 @@ public abstract class Source implements Component {
         if (!this.configured) {
             this.validateConfiguration(config);
             this.name = config.getSectionName();
+            this.concurrencyLevel = config.getInt32("concurrencyLevel", 0);
             this.configured = true;
         }
     }
@@ -63,7 +64,6 @@ public abstract class Source implements Component {
         if (!this.configured) {
             throw new ConfigurationException("Not configured");
         }
-
         return this.name;
     }
 
