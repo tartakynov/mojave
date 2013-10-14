@@ -18,47 +18,45 @@
  */
 package com.github.tartakynov.mojave;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import com.github.tartakynov.mojave.scripting.Global;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mozilla.javascript.Context;
 
-/**
- *
- */
-public class ConfigurationTest extends TestCase {
+public class ConfigurationTest {
+    private Configuration configuration;
+
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
+        Global global = new Global(Context.enter(), false);
+        String script = ConfigurationTest.class.getClassLoader().getResource("config.js").getFile();
+        global.addConfigurationListener(new Global.ConfigurationListener() {
+            @Override
+            public void onConfig(Configuration config) {
+                ConfigurationTest.this.configuration = config;
+            }
+        });
+        global.run(script);
     }
 
+    @After
+    public void tearDown() {
+        Context.exit();
+    }
+
+    @Test
     public void testGetSection() throws Exception {
-        Assert.assertEquals(1, 0);
+
     }
 
+    @Test
     public void testContains() throws Exception {
 
     }
 
+    @Test
     public void testGetSectionName() throws Exception {
-
-    }
-
-    public void testGetArray() throws Exception {
-
-    }
-
-    public void testGet() throws Exception {
-
-    }
-
-    public void testGetInt32() throws Exception {
-
-    }
-
-    public void testGetInt64() throws Exception {
-
-    }
-
-    public void testGetDouble() throws Exception {
 
     }
 }

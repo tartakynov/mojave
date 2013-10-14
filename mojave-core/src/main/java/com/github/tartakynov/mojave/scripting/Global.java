@@ -34,6 +34,7 @@ import java.util.*;
 public class Global extends ImporterTopLevel {
     protected static final HashMap<File, Scriptable> modules = new HashMap<File, Scriptable>();
     protected static final Stack<String> location = new Stack<String>();
+    protected final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
     protected final Context context;
 
     public Global(Context ctx, boolean sealed) {
@@ -101,6 +102,9 @@ public class Global extends ImporterTopLevel {
         Properties properties = new Properties();
         properties.putAll(config.getProperties());
         PropertyConfigurator.configure(properties);
+        if (thisObj instanceof Global) {
+            ((Global) thisObj).notifyConfigurationListeners(config);
+        }
     }
 
     /**
@@ -151,9 +155,41 @@ public class Global extends ImporterTopLevel {
     }
 
     /**
+     * Adds configuration listener.
+     *
+     * @param listener to be added.
+     */
+    public void addConfigurationListener(ConfigurationListener listener) {
+        synchronized (this.listeners) {
+            this.listeners.add(listener);
+        }
+    }
+
+    /**
+     * Calls registered event listeners.
+     */
+    protected void notifyConfigurationListeners(Configuration config) {
+        synchronized (this.listeners) {
+            for (ConfigurationListener listener : this.listeners) {
+                listener.onConfig(config);
+            }
+        }
+    }
+
+    /**
      * Runs script from given file.
      */
     public void run(String file) throws IOException {
         runScriptFromFile(this.context, this, new File(file));
+    }
+
+    /**
+     * Used for receiving notifications from the Global object when config method is called.
+     */
+    public interface ConfigurationListener {
+        /**
+         * Called when config is called from JavaScript code.
+         */
+        void onConfig(Configuration config);
     }
 }
