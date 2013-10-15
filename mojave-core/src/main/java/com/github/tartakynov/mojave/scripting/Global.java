@@ -33,7 +33,6 @@ import java.util.*;
  */
 public class Global extends ImporterTopLevel {
     protected static final HashMap<File, Scriptable> modules = new HashMap<File, Scriptable>();
-    protected static final Stack<String> location = new Stack<String>();
     protected static final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
     protected final Context context;
 
@@ -69,7 +68,8 @@ public class Global extends ImporterTopLevel {
      */
     public static Object require(Context ctx, Scriptable thisObj, Object[] args, Function funObj)
             throws IOException {
-        File file = new File(location.peek(), Context.toString(args[0]));
+        String dir = (String) getProperty(thisObj, ConstantProperties.DIRECTORY_NAME.toString());
+        File file = new File(dir, Context.toString(args[0]));
 
         // check if module is already loaded
         if (modules.containsKey(file)) {
@@ -113,14 +113,12 @@ public class Global extends ImporterTopLevel {
         FileReader in = new FileReader(file);
         try {
             String currentLocation = file.getParentFile().getAbsolutePath();
-            location.push(currentLocation);
             Script script = cx.compileReader(in, file.getName(), 1, null);
-            scope.defineProperty("__filename", file.getName(), CONST | DONTENUM);
-            scope.defineProperty("__dirname", file.getParent(), CONST | DONTENUM);
+            scope.defineProperty(ConstantProperties.FILE_NAME.toString(), file.getName(), CONST | DONTENUM);
+            scope.defineProperty(ConstantProperties.DIRECTORY_NAME.toString(), file.getParent(), CONST | DONTENUM);
             script.exec(cx, scope);
         } finally {
             in.close();
-            location.pop();
         }
     }
 
@@ -179,6 +177,32 @@ public class Global extends ImporterTopLevel {
      */
     public void run(String file) throws IOException {
         runScriptFromFile(this.context, this, new File(file));
+    }
+
+    /**
+     * Script's constant properties.
+     */
+    protected enum ConstantProperties {
+        /**
+         * Script directory absolute path.
+         */
+        DIRECTORY_NAME("__dirname"),
+
+        /**
+         * Script file name.
+         */
+        FILE_NAME("__filename");
+
+        private final String propertyName;
+
+        private ConstantProperties(final String propertyName) {
+            this.propertyName = propertyName;
+        }
+
+        @Override
+        public String toString() {
+            return this.propertyName;
+        }
     }
 
     /**
