@@ -20,6 +20,7 @@ package com.github.tartakynov.mojave;
 
 import com.github.tartakynov.mojave.scripting.Global;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
@@ -29,9 +30,9 @@ public class ConfigurationTest {
 
     @Before
     public void setUp() throws Exception {
-        Global global = new Global(Context.enter(), false);
         String script = ConfigurationTest.class.getClassLoader().getResource("config.js").getFile();
-        global.addConfigurationListener(new Global.ConfigurationListener() {
+        Global global = new Global(Context.enter(), false);
+        Global.addConfigurationListener(new Global.ConfigurationListener() {
             @Override
             public void onConfig(Configuration config) {
                 ConfigurationTest.this.configuration = config;
@@ -47,7 +48,9 @@ public class ConfigurationTest {
 
     @Test
     public void testGetSection() throws Exception {
-
+        Configuration section = this.configuration.getSection("sources");
+        Assert.assertNotNull(section);
+        Assert.assertNotNull(section.getSectionName());
     }
 
     @Test

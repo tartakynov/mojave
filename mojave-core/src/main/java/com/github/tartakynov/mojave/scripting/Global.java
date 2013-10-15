@@ -34,7 +34,7 @@ import java.util.*;
 public class Global extends ImporterTopLevel {
     protected static final HashMap<File, Scriptable> modules = new HashMap<File, Scriptable>();
     protected static final Stack<String> location = new Stack<String>();
-    protected final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
+    protected static final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
     protected final Context context;
 
     public Global(Context ctx, boolean sealed) {
@@ -102,9 +102,7 @@ public class Global extends ImporterTopLevel {
         Properties properties = new Properties();
         properties.putAll(config.getProperties());
         PropertyConfigurator.configure(properties);
-        if (thisObj instanceof Global) {
-            ((Global) thisObj).notifyConfigurationListeners(config);
-        }
+        notifyConfigurationListeners(config);
     }
 
     /**
@@ -159,18 +157,18 @@ public class Global extends ImporterTopLevel {
      *
      * @param listener to be added.
      */
-    public void addConfigurationListener(ConfigurationListener listener) {
-        synchronized (this.listeners) {
-            this.listeners.add(listener);
+    public static void addConfigurationListener(ConfigurationListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
         }
     }
 
     /**
      * Calls registered event listeners.
      */
-    protected void notifyConfigurationListeners(Configuration config) {
-        synchronized (this.listeners) {
-            for (ConfigurationListener listener : this.listeners) {
+    protected static void notifyConfigurationListeners(Configuration config) {
+        synchronized (listeners) {
+            for (ConfigurationListener listener : listeners) {
                 listener.onConfig(config);
             }
         }
