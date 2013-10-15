@@ -19,14 +19,16 @@
 package com.github.tartakynov.mojave.scripting;
 
 import com.github.tartakynov.mojave.Configuration;
-import org.apache.log4j.PropertyConfigurator;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.tools.shell.Environment;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JavaScript global object for Mojave.
@@ -99,9 +101,6 @@ public class Global extends ImporterTopLevel {
     public static void config(Context ctx, Scriptable thisObj, Object[] args, Function funObj) {
         // convert javascript object to configuration
         Configuration config = new Configuration(convertJsObjectToMap((NativeObject) args[0], ""));
-        Properties properties = new Properties();
-        properties.putAll(config.getProperties());
-        PropertyConfigurator.configure(properties);
         notifyConfigurationListeners(config);
     }
 
@@ -112,7 +111,6 @@ public class Global extends ImporterTopLevel {
             throws IOException {
         FileReader in = new FileReader(file);
         try {
-            String currentLocation = file.getParentFile().getAbsolutePath();
             Script script = cx.compileReader(in, file.getName(), 1, null);
             scope.defineProperty(ConstantProperties.FILE_NAME.toString(), file.getName(), CONST | DONTENUM);
             scope.defineProperty(ConstantProperties.DIRECTORY_NAME.toString(), file.getParent(), CONST | DONTENUM);
@@ -192,7 +190,6 @@ public class Global extends ImporterTopLevel {
          * Script file name.
          */
         FILE_NAME("__filename");
-
         private final String propertyName;
 
         private ConstantProperties(final String propertyName) {
