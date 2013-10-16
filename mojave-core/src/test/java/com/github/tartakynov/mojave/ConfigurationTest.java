@@ -48,18 +48,24 @@ public class ConfigurationTest {
 
     @Test
     public void testGetSection() throws Exception {
-        Configuration section = this.configuration.getSection("sources");
+        Configuration section = this.configuration.getSection("testSectionA");
         Assert.assertNotNull(section);
         Assert.assertNotNull(section.getSectionName());
     }
 
     @Test
     public void testContains() throws Exception {
-
+        Assert.assertTrue(this.configuration.contains("testSectionA"));
+        Assert.assertTrue(this.configuration.contains("testSectionA.testPropertyAInt"));
+        Assert.assertFalse(this.configuration.contains("FalseSection"));
     }
 
     @Test
     public void testGetSectionName() throws Exception {
-
+        Configuration sectionA = this.configuration.getSection("testSectionA");
+        Configuration sectionB = sectionA.getSection("testSectionB");
+        Assert.assertNull(this.configuration.getSectionName());
+        Assert.assertEquals(sectionA.getSectionName(), "testSectionA");
+        Assert.assertEquals(sectionB.getSectionName(), "testSectionB");
     }
 }

@@ -17,18 +17,18 @@ public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) throws Exception {
-        try {
-            Context context = Context.enter();
-            context.setOptimizationLevel(9);
-            Global.addConfigurationListener(new Global.ConfigurationListener() {
-                @Override
-                public void onConfig(Configuration config) {
-                    Properties properties = new Properties();
-                    properties.putAll(config.getProperties());
-                    PropertyConfigurator.configure(properties);
-                }
-            });
+        Context context = Context.enter();
+        context.setOptimizationLevel(9);
+        Global.addConfigurationListener(new Global.ConfigurationListener() {
+            @Override
+            public void onConfig(Configuration config) {
+                Properties properties = new Properties();
+                properties.putAll(config.getProperties());
+                PropertyConfigurator.configure(properties);
+            }
+        });
 
+        try {
             Global global = new Global(context, false);
             global.run("c:\\src\\test.js");
             log.debug("hello");

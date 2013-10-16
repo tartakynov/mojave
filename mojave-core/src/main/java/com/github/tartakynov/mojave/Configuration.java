@@ -71,7 +71,15 @@ public final class Configuration {
      * @return true if the source sequence contains a key that has the specified value; otherwise, false.
      */
     public boolean contains(String key) {
-        return this.values.containsKey(key);
+        boolean contains = this.values.containsKey(key);
+        if (!contains) {
+            for (String item : this.values.keySet()) {
+                if (item.startsWith(key + ".")) {
+                    return true;
+                }
+            }
+        }
+        return contains;
     }
 
     /**
