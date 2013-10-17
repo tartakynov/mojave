@@ -45,9 +45,9 @@ public class Global extends ImporterTopLevel {
 
         Environment.defineClass(this);
         Environment environment = new Environment(this);
-        this.defineProperty("environment", environment, DONTENUM);
-        this.defineProperty("stdout", System.out, DONTENUM);
-        this.defineProperty("stderr", System.err, DONTENUM);
+        this.defineProperty(Properties.ENVIRONMENT.toString(), environment, DONTENUM);
+        this.defineProperty(Properties.STDOUT.toString(), System.out, DONTENUM);
+        this.defineProperty(Properties.STDERR.toString(), System.err, DONTENUM);
         this.context = ctx;
     }
 
@@ -70,7 +70,7 @@ public class Global extends ImporterTopLevel {
      */
     public static Object require(Context ctx, Scriptable thisObj, Object[] args, Function funObj)
             throws IOException {
-        String dir = (String) getProperty(thisObj, ConstantProperties.DIRECTORY_NAME.toString());
+        String dir = (String) getProperty(thisObj, Properties.DIRECTORY_NAME.toString());
         File file = new File(dir, Context.toString(args[0]));
 
         // check if module is already loaded
@@ -84,7 +84,7 @@ public class Global extends ImporterTopLevel {
 
         // define the exports property
         ScriptableObject exports = (ScriptableObject) ctx.newObject(scope);
-        scope.defineProperty("exports", exports, DONTENUM);
+        scope.defineProperty(Properties.EXPORTS.toString(), exports, DONTENUM);
 
         // compile & execute the module
         runScriptFromFile(ctx, scope, file);
@@ -112,8 +112,8 @@ public class Global extends ImporterTopLevel {
         FileReader in = new FileReader(file);
         try {
             Script script = cx.compileReader(in, file.getName(), 1, null);
-            scope.defineProperty(ConstantProperties.FILE_NAME.toString(), file.getName(), CONST | DONTENUM);
-            scope.defineProperty(ConstantProperties.DIRECTORY_NAME.toString(), file.getParent(), CONST | DONTENUM);
+            scope.defineProperty(Properties.FILE_NAME.toString(), file.getName(), CONST | DONTENUM);
+            scope.defineProperty(Properties.DIRECTORY_NAME.toString(), file.getParent(), CONST | DONTENUM);
             script.exec(cx, scope);
         } finally {
             in.close();
@@ -180,19 +180,21 @@ public class Global extends ImporterTopLevel {
     /**
      * Script's constant properties.
      */
-    protected enum ConstantProperties {
-        /**
-         * Script directory absolute path.
-         */
+    protected enum Properties {
+        EXPORTS("exports"),
+
+        ENVIRONMENT("environment"),
+
+        STDOUT("stdout"),
+
+        STDERR("stderr"),
+
         DIRECTORY_NAME("__dirname"),
 
-        /**
-         * Script file name.
-         */
         FILE_NAME("__filename");
         private final String propertyName;
 
-        private ConstantProperties(final String propertyName) {
+        private Properties(final String propertyName) {
             this.propertyName = propertyName;
         }
 
