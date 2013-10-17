@@ -18,14 +18,12 @@
  */
 package com.github.tartakynov.mojave.scripting;
 
-import com.github.tartakynov.mojave.Configuration;
 import org.mozilla.javascript.*;
 import org.mozilla.javascript.tools.shell.Environment;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +33,10 @@ import java.util.Map;
  */
 public class Global extends ImporterTopLevel {
     protected static final HashMap<File, Scriptable> modules = new HashMap<File, Scriptable>();
-    protected static final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
     protected final Context context;
 
     public Global(Context ctx, boolean sealed) throws Exception {
-        String[] functionNames = {"version", "require", "config"};
+        String[] functionNames = {"version", "require"};
         this.initStandardObjects(ctx, sealed);
         this.defineFunctionProperties(functionNames, Global.class, DONTENUM);
         ScriptableObject.defineClass(this, Mojave.class);
@@ -96,16 +93,6 @@ public class Global extends ImporterTopLevel {
     }
 
     /**
-     * Configures the application.
-     * This method is defined as a JavaScript function.
-     */
-    public static void config(Context ctx, Scriptable thisObj, Object[] args, Function funObj) {
-        // convert javascript object to configuration
-        Configuration config = new Configuration(convertJsObjectToMap((NativeObject) args[0], ""));
-        notifyConfigurationListeners(config);
-    }
-
-    /**
      * Runs script from file in given context with specified scope.
      */
     protected static void runScriptFromFile(Context cx, ScriptableObject scope, File file)
@@ -128,7 +115,7 @@ public class Global extends ImporterTopLevel {
      * @param prefix Recursive parameter. Leave empty.
      * @return Converted map.
      */
-    protected static Map<String, String> convertJsObjectToMap(NativeObject obj, String prefix) {
+    public static Map<String, String> convertJsObjectToMap(NativeObject obj, String prefix) {
         Map<String, String> result = new HashMap<String, String>();
         for (Map.Entry<Object, Object> property : obj.entrySet()) {
             String key = property.getKey().toString();
@@ -147,28 +134,6 @@ public class Global extends ImporterTopLevel {
             }
         }
         return result;
-    }
-
-    /**
-     * Adds configuration listener.
-     *
-     * @param listener to be added.
-     */
-    public static void addConfigurationListener(ConfigurationListener listener) {
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
-    }
-
-    /**
-     * Calls registered event listeners.
-     */
-    protected static void notifyConfigurationListeners(Configuration config) {
-        synchronized (listeners) {
-            for (ConfigurationListener listener : listeners) {
-                listener.onConfig(config);
-            }
-        }
     }
 
     /**
@@ -203,15 +168,5 @@ public class Global extends ImporterTopLevel {
         public String toString() {
             return this.propertyName;
         }
-    }
-
-    /**
-     * Used for receiving notifications from the Global object when config method is called.
-     */
-    public interface ConfigurationListener {
-        /**
-         * Called when config is called from JavaScript code.
-         */
-        void onConfig(Configuration config);
     }
 }

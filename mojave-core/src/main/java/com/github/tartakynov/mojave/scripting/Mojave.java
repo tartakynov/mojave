@@ -18,10 +18,13 @@
  */
 package com.github.tartakynov.mojave.scripting;
 
+import com.github.tartakynov.mojave.Configuration;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.annotations.JSConstructor;
 import org.mozilla.javascript.annotations.JSGetter;
+
+import java.util.Map;
 
 /**
  *
@@ -36,11 +39,12 @@ public class Mojave extends ScriptableObject {
     /**
      * The JavaScript constructor.
      *
-     * @param config configuration.
+     * @param configJsObj configuration.
      */
     @JSConstructor
-    public Mojave(NativeObject config) {
-        config.toString();
+    public Mojave(NativeObject configJsObj) {
+        Map<String, String> map = Global.convertJsObjectToMap(configJsObj, "");
+        Configuration config = new Configuration(map);
     }
 
     @Override

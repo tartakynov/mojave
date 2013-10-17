@@ -1,4 +1,4 @@
-config({
+config = {
     testSectionA: {
         testPropertyAInt: 1,
         testPropertyAString: 'hello world',
@@ -8,4 +8,4 @@ config({
             testPropertyBInt: 1
         }
     }
-});
+};

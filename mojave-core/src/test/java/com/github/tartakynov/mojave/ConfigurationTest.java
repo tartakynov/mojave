@@ -24,23 +24,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ConfigurationTest {
     private Configuration configuration;
+
+    private static Configuration getConfiguration(Object configJsObj) {
+        Map<String, String> map = Global.convertJsObjectToMap((NativeObject) configJsObj, "");
+        return new Configuration(map);
+    }
 
     @Before
     public void setUp() throws Exception {
         String script = ConfigurationTest.class.getClassLoader().getResource("config.js").getFile();
         Global global = new Global(Context.enter(), false);
-        Global.addConfigurationListener(new Global.ConfigurationListener() {
-            @Override
-            public void onConfig(Configuration config) {
-                ConfigurationTest.this.configuration = config;
-            }
-        });
         global.run(script);
+        this.configuration = getConfiguration(global.get("config"));
     }
 
     @After
