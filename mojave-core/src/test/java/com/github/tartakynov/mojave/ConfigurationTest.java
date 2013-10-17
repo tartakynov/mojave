@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
 
+import java.util.ArrayList;
+
 public class ConfigurationTest {
     private Configuration configuration;
 
@@ -47,25 +49,61 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testGetSection() throws Exception {
+    public void testGetSection() {
         Configuration section = this.configuration.getSection("testSectionA");
         Assert.assertNotNull(section);
         Assert.assertNotNull(section.getSectionName());
     }
 
     @Test
-    public void testContains() throws Exception {
-        Assert.assertTrue(this.configuration.contains("testSectionA"));
-        Assert.assertTrue(this.configuration.contains("testSectionA.testPropertyAInt"));
-        Assert.assertFalse(this.configuration.contains("FalseSection"));
+    public void testContains() {
+        Configuration config = this.configuration;
+        Assert.assertTrue(config.contains("testSectionA"));
+        Assert.assertTrue(config.contains("testSectionA.testPropertyAInt"));
+        Assert.assertFalse(config.contains("FalseSection"));
     }
 
     @Test
-    public void testGetSectionName() throws Exception {
+    public void testGetSectionName() {
         Configuration sectionA = this.configuration.getSection("testSectionA");
         Configuration sectionB = sectionA.getSection("testSectionB");
         Assert.assertNull(this.configuration.getSectionName());
         Assert.assertEquals(sectionA.getSectionName(), "testSectionA");
         Assert.assertEquals(sectionB.getSectionName(), "testSectionB");
+    }
+
+    @Test
+    public void testGetArray() {
+        ArrayList<String> array = this.configuration.getArray("testSectionA.testPropertyAIntArray");
+        Assert.assertNotNull(array);
+        Assert.assertEquals(5, array.size());
+        Assert.assertEquals("1", array.get(0));
+    }
+
+    @Test
+    public void testGet() {
+        Configuration config = this.configuration;
+        Assert.assertNull(config.get("falseProperty"));
+        Assert.assertNull(config.get("testSectionA.testPropertyAIntArray"));
+        Assert.assertEquals("1", config.get("testSectionA.testPropertyAInt"));
+        Assert.assertEquals("hello world", config.get("testSectionA.testPropertyAString"));
+    }
+
+    @Test
+    public void testGetInt32() {
+        Configuration config = this.configuration;
+        Assert.assertEquals(1, config.getInt32("testSectionA.testPropertyAInt", 0));
+    }
+
+    @Test
+    public void testGetInt64() {
+        Configuration config = this.configuration;
+        Assert.assertEquals(1, config.getInt64("testSectionA.testPropertyAInt", 0));
+    }
+
+    @Test
+    public void testGetDouble() {
+        Configuration config = this.configuration;
+        Assert.assertEquals(1.0, config.getDouble("testSectionA.testPropertyAInt", 0.0), 0.001);
     }
 }
