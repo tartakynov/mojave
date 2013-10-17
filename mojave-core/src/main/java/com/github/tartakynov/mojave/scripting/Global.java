@@ -25,6 +25,7 @@ import org.mozilla.javascript.tools.shell.Environment;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,15 @@ public class Global extends ImporterTopLevel {
 
         Environment.defineClass(this);
         Environment environment = new Environment(this);
+        try {
+            ScriptableObject.defineClass(this, Mojave.class);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InstantiationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         this.defineProperty(Properties.ENVIRONMENT.toString(), environment, DONTENUM);
         this.defineProperty(Properties.STDOUT.toString(), System.out, DONTENUM);
         this.defineProperty(Properties.STDERR.toString(), System.err, DONTENUM);
