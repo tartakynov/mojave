@@ -25,7 +25,6 @@ import org.mozilla.javascript.tools.shell.Environment;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,22 +38,14 @@ public class Global extends ImporterTopLevel {
     protected static final ArrayList<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>();
     protected final Context context;
 
-    public Global(Context ctx, boolean sealed) {
+    public Global(Context ctx, boolean sealed) throws Exception {
         String[] functionNames = {"version", "require", "config"};
         this.initStandardObjects(ctx, sealed);
         this.defineFunctionProperties(functionNames, Global.class, DONTENUM);
+        ScriptableObject.defineClass(this, Mojave.class);
 
         Environment.defineClass(this);
         Environment environment = new Environment(this);
-        try {
-            ScriptableObject.defineClass(this, Mojave.class);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InstantiationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
         this.defineProperty(Properties.ENVIRONMENT.toString(), environment, DONTENUM);
         this.defineProperty(Properties.STDOUT.toString(), System.out, DONTENUM);
         this.defineProperty(Properties.STDERR.toString(), System.err, DONTENUM);
