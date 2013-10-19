@@ -33,7 +33,7 @@ public class ConfigurationTest {
     private Configuration configuration;
 
     private static Configuration getConfiguration(Object configJsObj) {
-        Map<String, String> map = Global.convertJsObjectToMap((NativeObject) configJsObj, "");
+        Map<String, String> map = Global.convertJsObjectToMap((NativeObject) configJsObj);
         return new Configuration(map);
     }
 

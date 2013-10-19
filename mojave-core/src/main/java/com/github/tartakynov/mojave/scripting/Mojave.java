@@ -43,7 +43,7 @@ public class Mojave extends ScriptableObject {
      */
     @JSConstructor
     public Mojave(NativeObject configJsObj) {
-        Map<String, String> map = Global.convertJsObjectToMap(configJsObj, "");
+        Map<String, String> map = Global.convertJsObjectToMap(configJsObj);
         Configuration config = new Configuration(map);
     }
 

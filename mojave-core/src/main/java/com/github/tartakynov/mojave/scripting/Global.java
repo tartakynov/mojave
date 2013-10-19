@@ -24,9 +24,7 @@ import org.mozilla.javascript.tools.shell.Environment;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JavaScript global object for Mojave.
@@ -111,25 +109,33 @@ public class Global extends ImporterTopLevel {
     /**
      * Converts JavaScript object to map of strings.
      *
-     * @param obj    JavaScript object to convert.
-     * @param prefix Recursive parameter. Leave empty.
+     * @param obj JavaScript object to convert.
      * @return Converted map.
      */
-    public static Map<String, String> convertJsObjectToMap(NativeObject obj, String prefix) {
-        Map<String, String> result = new HashMap<String, String>();
-        for (Map.Entry<Object, Object> property : obj.entrySet()) {
-            String key = property.getKey().toString();
-            Object value = property.getValue();
-            if (value instanceof NativeObject) {
-                result.putAll(convertJsObjectToMap((NativeObject) value, prefix + key + "."));
-            } else {
-                if (value instanceof List) {
-                    int i = 0;
-                    for (Object item : (List) value) {
-                        result.put(prefix + key + "." + i++, Context.toString(item));
-                    }
+    public static Map<String, String> convertJsObjectToMap(final NativeObject obj) {
+        HashMap<String, String> result = new HashMap<String, String>();
+        Stack<Map.Entry<String, NativeObject>> entries = new Stack<Map.Entry<String, NativeObject>>() {{
+            push(new AbstractMap.SimpleEntry<String, NativeObject>("", obj));
+        }};
+
+        while (!entries.isEmpty()) {
+            Map.Entry<String, NativeObject> x = entries.pop();
+            String prefix = x.getKey();
+            NativeObject section = x.getValue();
+            for (Map.Entry<Object, Object> property : section.entrySet()) {
+                String key = property.getKey().toString();
+                Object value = property.getValue();
+                if (value instanceof NativeObject) {
+                    entries.push(new AbstractMap.SimpleEntry<String, NativeObject>(prefix + key + ".", (NativeObject) value));
                 } else {
-                    result.put(key.equals("__") ? prefix.substring(0, prefix.length() - 1) : prefix + key, Context.toString(value));
+                    if (value instanceof List) {
+                        int i = 0;
+                        for (Object item : (List) value) {
+                            result.put(prefix + key + "." + i++, Context.toString(item));
+                        }
+                    } else {
+                        result.put(key.equals("__") ? prefix.substring(0, prefix.length() - 1) : prefix + key, Context.toString(value));
+                    }
                 }
             }
         }
