@@ -82,7 +82,7 @@ public class Global extends ImporterTopLevel {
 
         // define the exports property
         ScriptableObject exports = (ScriptableObject) ctx.newObject(scope);
-        scope.defineProperty(Properties.EXPORTS.toString(), exports, DONTENUM);
+        scope.defineProperty(Properties.EXPORTS.toString(), exports, PERMANENT | DONTENUM);
 
         // compile & execute the module
         runScriptFromFile(ctx, scope, file);
