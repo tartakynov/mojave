@@ -19,8 +19,7 @@
 package com.github.tartakynov.mojave.scripting;
 
 import com.github.tartakynov.mojave.Configuration;
-import org.mozilla.javascript.NativeObject;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
 import org.mozilla.javascript.annotations.JSConstructor;
 import org.mozilla.javascript.annotations.JSGetter;
 
@@ -60,8 +59,9 @@ public class Mojave extends ScriptableObject {
     // The method getCount defines the count property.
     @JSGetter
     public Object getSources() {
+        final Scriptable scope = this.getParentScope();
         return new NativeObject() {{
-            defineProperty("a", 1, READONLY);
+            defineProperty("a", new SourceRunner(scope, null), READONLY);
             defineProperty("b", 2, READONLY);
         }};
     }
